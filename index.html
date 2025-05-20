@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filtri Convoluzionali - Presentazione Animata (Tema Chiaro)</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            line-height: 1.7;
+            margin: 0;
+            padding: 20px;
+            background-color: #ffffff; /* Sfondo bianco */
+            color: #000000; /* Testo nero */
+            position: relative; 
+            overflow-x: hidden; 
+            text-align: left; 
+        }
+        header {
+            background-color: #ffffff; 
+            color: #000000; 
+            padding: 1.5rem 0;
+            padding-left: 10%; 
+            margin-bottom: 60px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: flex-start; 
+            position: relative; 
+            z-index: 10; 
+        }
+        .title-wrapper { /* Wrapper per titolo e sottotitolo */
+            margin-right: 30px; 
+        }
+        header h1 {
+            margin: 0;
+            font-size: 3.5rem; 
+            font-family: Helvetica, Arial, sans-serif;
+        }
+        .subtitle {
+            font-size: 1.6rem; 
+            font-family: Helvetica, Arial, sans-serif; 
+            color: #333333; 
+            margin-top: 0.2rem; 
+            margin-bottom: 0; 
+            line-height: 1.2; 
+            text-align: left; 
+        }
+        
+        #table-of-contents-container {
+            width: 85%;
+            max-width: 900px;
+            margin: 0 auto 60px auto; 
+            padding: 0 25px; 
+            position: relative;
+            z-index: 15; 
+        }
+        #table-of-contents-container details {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        #table-of-contents-container summary {
+            padding: 10px 15px;
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer; 
+            list-style: none; 
+        }
+        #table-of-contents-container summary::-webkit-details-marker { 
+            display: none;
+        }
+        #table-of-contents-container summary::before { 
+            content: '▶ ';
+            font-size: 0.8em;
+            margin-right: 5px;
+        }
+        #table-of-contents-container details[open] summary::before {
+            content: '▼ ';
+        }
+        #table-of-contents-container ul {
+            list-style-type: none;
+            padding: 0 15px 15px 30px;
+            margin: 0;
+        }
+        #table-of-contents-container li a {
+            text-decoration: none;
+            color: #000000; 
+            display: block;
+            padding: 5px 0;
+            cursor: pointer; 
+            font-family: Helvetica, Arial, sans-serif;
+        }
+        #table-of-contents-container li a:hover {
+            text-decoration: underline;
+            color: #000000; 
+        }
+
+        .main-content-wrapper { 
+            position: relative;
+        }
+
+        .container {
+            width: 85%;
+            max-width: 900px;
+            margin: 0 auto 40px auto;
+            overflow: visible; 
+            padding: 25px;
+            background-color: #ffffff; 
+            position: relative; 
+            z-index: 5; 
+        }
+        section {
+            padding-bottom: 30px;
+            margin-bottom: 100px; 
+        }
+        section:last-child {
+            border-bottom: none;
+            margin-bottom: 20px;
+        }
+        
+        /* Titoli di sezione principali (fuori dai box lab) */
+        section > h2 {
+            padding-bottom: 8px;
+            margin-top: 0;
+            font-size: 2rem;
+            color: #000000; 
+            font-family: Helvetica, Arial, sans-serif;
+        }
+
+        /* Box dei laboratori */
+        .lab-container, .advanced-lab-container {
+            background-color: #f9f9f9; 
+            padding: 20px; 
+            border-radius: 4px; 
+            border: 1px solid #dddddd; 
+            margin-top: 25px; 
+            margin-bottom: 25px; 
+        }
+
+        /* Titolo principale all'interno di un box laboratorio (H3) */
+        .lab-container > h3, 
+        .advanced-lab-container > h3 { 
+            font-size: 1.5rem;
+            margin-top: 0; 
+            margin-bottom: 20px; 
+            color: #000000; 
+            font-family: Helvetica, Arial, sans-serif;
+        }
+
+        /* Sottotitoli (H4) all'interno dei box laboratorio o delle loro suddivisioni */
+        .lab-container h4, 
+        .advanced-lab-container h4,
+        .explore-kernel-lab > div > h4, 
+        .controls-wrapper-top > h4,  
+        .images-display-area > div > h4, 
+        .kernel-input-area > h4 {    
+            font-size: 1.2rem;
+            margin-top: 0; 
+            margin-bottom: 10px;
+            color: #000000;
+            font-family: Helvetica, Arial, sans-serif;
+        }
+        
+        p, li {
+            color: #333333; 
+        }
+
+        .equation { text-align: center; font-size: 1.2em; color: #000000; margin: 20px 0; }
+        
+        .matrix-table th, .matrix-table td, 
+        .kernel-table th, .kernel-table td, 
+        .header-logo-matrix td, 
+        .interactive-grid th, 
+        .interactive-grid > table input[type="number"], 
+        .advanced-lab-container .kernel-grid input, 
+        .padding-demo-table td {
+            text-align: center; 
+        }
+        /* Specific text-align for TDs in interactive-grid that are not inputs */
+        .interactive-grid table td:not(:has(input)) {
+             text-align: center;
+        }
+
+        button {
+            text-align: center;
+        }
+
+        .code-example {
+            background-color: #f0f0f0; 
+            padding: 12px;
+            border: 1px solid #cccccc; 
+            border-radius: 0;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 0.9em;
+            color: #000000; 
+        }
+        .image-container { 
+            margin: 25px 0; 
+        }
+        .image-container img, .image-container svg { 
+            max-width: 100%;
+            height: auto;
+            border-radius: 0;
+            background-color: #f8f8f8; 
+            border: 1px solid #dddddd; 
+            display: block; 
+            margin-left: 0; 
+            margin-right: auto; 
+        }
+         .image-container p { 
+            font-size: 0.9em;
+            color: #555555;
+            text-align: left; 
+        }
+
+        /* --- Matrix Styling --- */
+        .matrix-table, 
+        .kernel-table, 
+        .header-logo-matrix table, 
+        .interactive-grid table, 
+        .padding-demo-table {
+            margin: 15px 0; 
+            border-collapse: collapse;
+        }
+        
+        .kernel-table,
+        .header-logo-matrix table,
+        .interactive-grid table.kernel-input-table, 
+        .padding-demo-kernel { 
+            border: 1px solid #007bff; 
+        }
+        .kernel-table td,
+        .header-logo-matrix td,
+        .interactive-grid table.kernel-input-table td,
+        .padding-demo-kernel td, 
+        .advanced-lab-container .kernel-grid input { 
+             border: 1px solid #007bff; 
+        }
+
+        .matrix-table, 
+        .padding-demo-image,
+        .interactive-grid table#imagePatchTable { 
+             border: 1px solid #aaaaaa; 
+        }
+         .matrix-table td, 
+         .padding-demo-image td { 
+             border: 1px solid #bbbbbb; 
+         }
+        
+        .matrix-table td, .matrix-table th { 
+             width: 25px; 
+             height: 25px;
+             line-height: 25px;
+             font-size: 0.7em;
+        }
+
+        /* Celle per kernel statici, header logo, input kernel lab base, kernel demo padding, input kernel lab avanzato */
+        .kernel-table td, .kernel-table th, 
+        .header-logo-matrix td {
+            width: 45px;
+            height: 45px;
+            line-height: 45px;
+            font-size: 0.9em;
+            padding: 0; 
+            box-sizing: border-box;
+            vertical-align: middle;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        
+        .house-matrix td { 
+            width: 15px;  
+            height: 15px;
+            line-height: 15px; 
+            font-size: 0; 
+            color: transparent;
+        }
+        
+        .padding-demo-table td { 
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            font-size: 0.8em;
+            padding: 0; 
+            box-sizing: border-box;
+            vertical-align: middle;
+        }
+        .padding-demo-table.padding-demo-kernel td,
+        .padding-demo-table.padding-demo-image td {
+            font-family: 'Courier New', Courier, monospace;
+        }
+        
+        /* Grayscale classes for house example */
+        .gs0 { background-color: #FFFFFF; color: #000000; } 
+        .gs1 { background-color: #F5F5F5; color: #000000; } 
+        .gs2 { background-color: #EEEEEE; color: #000000; } 
+        .gs3 { background-color: #D0D0D0; color: #000000; } 
+        .gs4 { background-color: #BDBDBD; color: #000000; } 
+        .gs5 { background-color: #A0A0A0; color: #000000; } 
+        .gs6 { background-color: #888888; color: #000000; } 
+        .gs7 { background-color: #686868; color: white; } 
+        .gs8 { background-color: #484848; color: white; } 
+        .gs9 { background-color: #000000; color: white; } 
+        .g-grass { background-color: #9E9E9E; color: #000000; }
+
+        /* Original grayscale classes for image patch and header logo */
+        .matrix-table td.gray-0, .header-logo-matrix td.gray-0, table.interactive-grid#imagePatchTable td.gray-0 { background-color: #FFFFFF; color: #000000; }
+        .matrix-table td.gray-1, .header-logo-matrix td.gray-1, table.interactive-grid#imagePatchTable td.gray-1 { background-color: #F5F5F5; color: #000000; } 
+        .matrix-table td.gray-2, .header-logo-matrix td.gray-2, table.interactive-grid#imagePatchTable td.gray-2 { background-color: #EEEEEE; color: #000000; }
+        .matrix-table td.gray-3, .header-logo-matrix td.gray-3, table.interactive-grid#imagePatchTable td.gray-3 { background-color: #DDDDDD; color: #000000; }
+        .matrix-table td.gray-4, .header-logo-matrix td.gray-4, table.interactive-grid#imagePatchTable td.gray-4 { background-color: #CCCCCC; color: #000000; }
+        .matrix-table td.gray-5, .header-logo-matrix td.gray-5, table.interactive-grid#imagePatchTable td.gray-5 { background-color: #BBBBBB; color: #000000; } 
+        .matrix-table td.gray-6, .header-logo-matrix td.gray-6, table.interactive-grid#imagePatchTable td.gray-6 { background-color: #AAAAAA; color: #000000; } 
+        .matrix-table td.gray-7, .header-logo-matrix td.gray-7, table.interactive-grid#imagePatchTable td.gray-7 { background-color: #999999; color: #000000; } 
+        .matrix-table td.gray-8, .header-logo-matrix td.gray-8, table.interactive-grid#imagePatchTable td.gray-8 { background-color: #777777; color: #ffffff; } 
+        .matrix-table td.gray-9, .header-logo-matrix td.gray-9, table.interactive-grid#imagePatchTable td.gray-9 { background-color: #333333; color: #ffffff; } 
+        
+        .padding-demo-table.padding-demo-kernel td.outside-image { 
+            background-color: rgba(0, 123, 255, 0.1); 
+            font-style: italic;
+        }
+         .padding-demo-table.padding-demo-image td.hidden-text {
+            color: transparent; 
+        }
+
+        .original-value-border { 
+            border: 2px solid #FF8C00 !important; 
+        }
+
+        .matrix-comparison-container {
+            display: flex;
+            justify-content: flex-start; 
+            align-items: flex-start; 
+            flex-wrap: wrap; 
+            margin-bottom: 20px; 
+            gap: 20px; 
+        }
+        .matrix-comparison-container > div {
+            flex: 1; 
+            min-width: 320px; 
+            padding: 0 5px; 
+        }
+         #esempi .matrix-comparison-container { 
+            justify-content: space-around; 
+        }
+        #esempi .matrix-comparison-container > div {
+            flex-basis: 45%; 
+            min-width: 280px; 
+        }
+
+
+        .matrix-comparison-container > div > p { 
+            font-weight: bold;
+            margin-bottom: 5px; 
+        }
+
+        .interactive-grid td { 
+             padding: 0 !important; 
+        }
+        /* Styling for KERNEL INPUT table in basic lab */
+        .interactive-grid table.kernel-input-table {
+            border: 1px solid #007bff; 
+            border-collapse: collapse;
+            border-spacing: 0;
+            margin: 15px 0;
+        }
+        .interactive-grid table.kernel-input-table td {
+            width: 45px;
+            height: 45px;
+            line-height: 45px; 
+            font-size: 0.9em;
+            border: 1px solid #007bff; 
+            vertical-align: middle; 
+            padding: 0 !important; 
+            box-sizing: border-box; 
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .interactive-grid table.kernel-input-table input[type="number"] { 
+            width: 100%; 
+            height: 100%;
+            background-color: #f0f0f0; 
+            color: #000000; 
+            border: none; 
+            border-radius: 0;
+            padding: 0 5px; 
+            box-sizing: border-box; 
+            font-family: 'Courier New', Courier, monospace;
+            text-align: center; 
+            vertical-align: middle; 
+        }
+        
+        /* Styling for IMAGE PATCH table in basic lab */
+        table.interactive-grid#imagePatchTable { 
+            border: 1px solid #aaaaaa; 
+            border-collapse: collapse;
+            border-spacing: 0; 
+            margin: 15px 0; 
+        }
+        table.interactive-grid#imagePatchTable td {
+            width: 55px; 
+            height: 55px;
+            line-height: 55px;
+            font-size: 0.9em;
+            border: none; 
+            text-align: center; 
+            vertical-align: middle; 
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .highlight {
+            font-weight: bold;
+            color: #000000; 
+            background-color: transparent;
+            padding: 0;
+        }
+        button {
+            background-color: #e0e0e0; 
+            color: #000000; 
+            border: 1px solid #aaaaaa; 
+            padding: 10px 18px;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 1em;
+            margin: 8px 2px;
+            cursor: pointer; 
+            border-radius: 0;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #cccccc; 
+        }
+        
+        .explore-kernel-lab { 
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: flex-start; 
+        }
+        .explore-kernel-lab > div {
+            flex: 1;
+            min-width: 280px; 
+        }
+        .calculation-details {
+            background-color: #f0f0f0; 
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9em;
+            white-space: pre-wrap; 
+            max-height: 300px; 
+            overflow-y: auto; 
+            border-radius: 4px;
+        }
+        .calculation-details p {
+            margin: 5px 0;
+        }
+
+        .advanced-lab-container .controls-wrapper-top {
+            margin-bottom: 20px;
+        }
+        .advanced-lab-container .controls-wrapper-top select {
+            max-width: 220px; 
+            margin: 5px 10px 5px 0; 
+            padding: 10px;
+            background-color: #f0f0f0; 
+            color: #000000; 
+            border: 1px solid #cccccc; 
+            border-radius: 4px; 
+        }
+
+        .advanced-lab-container .lab-main-area {
+            display: flex;
+            flex-wrap: wrap; 
+            gap: 20px; 
+            align-items: flex-start; 
+            justify-content: flex-start; 
+        }
+
+        .advanced-lab-container .images-display-area {
+            flex: 3; 
+            display: flex;
+            gap: 20px; 
+            justify-content: flex-start; 
+            flex-wrap: wrap; 
+            min-width: 0; 
+        }
+
+        .advanced-lab-container .images-display-area > div {
+            flex: 1; 
+            min-width: 300px; 
+        }
+         .advanced-lab-container .images-display-area > div h4 { 
+             text-align: left; 
+        }
+
+        .advanced-lab-container canvas {
+            border: none; 
+            max-width: 100%; 
+            background-color: #f8f8f8; 
+            display: block; 
+            border-radius: 4px;
+        }
+
+        .advanced-lab-container .kernel-input-area {
+            flex: 1; 
+            min-width: 200px; 
+            align-self: flex-start; 
+        }
+        
+        .advanced-lab-container .kernel-grid { 
+            display: grid;
+            grid-template-columns: repeat(3, 45px); 
+            grid-template-rows: repeat(3, 45px);    
+            gap: 0; 
+            margin: 15px 0; 
+            /* border: 1px solid #007bff; /* Rimosso bordo esterno */
+        }
+        .advanced-lab-container .kernel-grid input { 
+            padding: 0 5px; 
+            background-color: #f0f0f0; 
+            color: #000000; 
+            border: 1px solid #007bff; 
+            border-radius: 0; 
+            box-sizing: border-box;
+            font-family: 'Courier New', Courier, monospace;
+            text-align: center; 
+            width: 45px; 
+            height: 45px; 
+            line-height: 45px; 
+            vertical-align: middle;
+        }
+        
+        .result-box {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #f0f0f0; 
+            border: 1px solid #dddddd; 
+            border-radius: 4px;
+            font-weight: bold;
+            color: #000000; 
+        }
+        
+        footer {
+            padding: 20px;
+            background-color:#ffffff; 
+            color:#555555; 
+            margin-top: 40px;
+            font-size: 0.9em;
+            border-top: 1px solid #dddddd; 
+            text-align: center; /* Centered footer text */
+        }
+
+        /* Stili per la sezione Sitografia */
+        #sitografia {
+            margin-bottom: 40px; /* Aggiunto spazio sotto la sitografia */
+        }
+        #sitografia h2 {
+            font-size: 2rem;
+            color: #000000;
+            font-family: Helvetica, Arial, sans-serif;
+            margin-bottom: 15px;
+        }
+        #sitografia ul {
+            list-style-type: disc; /* O 'circle' o 'square' se preferisci */
+            padding-left: 20px; /* Aggiunge un po' di indentazione */
+            margin-top: 0;
+        }
+        #sitografia li {
+            margin-bottom: 8px; /* Spazio tra i link */
+        }
+        #sitografia a {
+            color: #007bff; /* Colore standard per i link */
+            text-decoration: none;
+        }
+        #sitografia a:hover {
+            text-decoration: underline;
+        }
+
+
+        @media (max-width: 768px) { 
+            .header {
+                padding-left: 5%;
+                 align-items: flex-start; 
+            }
+            .title-wrapper {
+                margin-right: 15px; 
+            }
+            header h1 {
+                font-size: 2.2rem; 
+            }
+            .subtitle {
+                font-size: 1.1rem; 
+            }
+            .header-logo-matrix table { 
+                transform: scale(0.8);
+                transform-origin: top right;
+            }
+            .container {
+                width: 95%;
+                padding: 15px;
+            }
+            .matrix-comparison-container, 
+            #esempi .matrix-comparison-container, 
+            .explore-kernel-lab, 
+            .advanced-lab-container .lab-main-area {
+                flex-direction: column; 
+                align-items: stretch; 
+            }
+            .matrix-comparison-container > div, 
+            #esempi .matrix-comparison-container > div,
+            .explore-kernel-lab > div, 
+            .advanced-lab-container .images-display-area > div, 
+            .advanced-lab-container .kernel-input-area {
+                min-width: 100%; 
+                margin-bottom: 20px;
+            }
+            .advanced-lab-container .images-display-area {
+                 justify-content: center; 
+            }
+            .advanced-lab-container canvas {
+                width: 100%; 
+                height: auto; 
+            }
+             .advanced-lab-container .kernel-grid {
+                margin: 15px auto; 
+            }
+            .house-matrix td { 
+                width: 10px;
+                height: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header id="page-header">
+        <div class="title-wrapper">
+            <h1>Filtri convoluzionali</h1>
+            <p class="subtitle">applicati all'elaborazione di immagini</p>
+        </div>
+        <div class="header-logo-matrix">
+            <table>
+                <tr><td class="gray-1"></td><td class="gray-3"></td><td class="gray-5"></td></tr>
+                <tr><td class="gray-7"></td><td class="gray-9"></td><td class="gray-7"></td></tr>
+                <tr><td class="gray-5"></td><td class="gray-3"></td><td class="gray-1"></td></tr>
+            </table>
+        </div>
+    </header>
+
+    <div id="table-of-contents-container">
+        <details>
+            <summary>Indice dei capitoli</summary>
+            <ul id="toc-list">
+            </ul>
+        </details>
+    </div>
+
+    <div class="main-content-wrapper"> 
+        <div class="container"> 
+
+            <section id="kernel-section"> 
+                <h2>Il kernel</h2>
+                <p>Per capire i filtri convoluzionali, dobbiamo prima conoscere il loro componente principale: il <strong>kernel</strong> (chiamato anche "maschera" o "matrice di convoluzione").</p>
+                <p><strong>Cos'è in parole semplici?</strong> Immagina il kernel come una piccola griglia di numeri, chiamata matrice. Ogni cella della matrice ha un valore specifico. Le dimensioni più comuni per i kernel sono 3x3 e 5x5 pixel, ma possono esistere anche kernel di altre dimensioni (solitamente dispari, per avere un pixel centrale ben definito).</p>
+                
+                <div class="matrix-comparison-container">
+                    <div>
+                        <p>Esempio di kernel 3x3 (sfocatura media):</p>
+                        <table class="kernel-table">
+                            <tr> <td>1/9</td> <td>1/9</td> <td>1/9</td> </tr>
+                            <tr> <td>1/9</td> <td>1/9</td> <td>1/9</td> </tr>
+                            <tr> <td>1/9</td> <td>1/9</td> <td>1/9</td> </tr>
+                        </table>
+                    </div>
+                    <div>
+                        <p>Esempio di kernel 5x5 (sfocatura gaussiana):</p>
+                        <table class="kernel-table kernel-5x5"> <tr> <td>1</td> <td>4</td> <td>7</td> <td>4</td> <td>1</td> </tr>
+                            <tr> <td>4</td> <td>16</td> <td>26</td> <td>16</td> <td>4</td> </tr>
+                            <tr> <td>7</td> <td>26</td> <td>41</td> <td>26</td> <td>7</td> </tr>
+                            <tr> <td>4</td> <td>16</td> <td>26</td> <td>16</td> <td>4</td> </tr>
+                            <tr> <td>1</td> <td>4</td> <td>7</td> <td>4</td> <td>1</td> </tr>
+                        </table>
+                    </div>
+                </div>
+                <p style="font-size: 0.9em;">(I valori nel kernel 5x5 sarebbero tipicamente normalizzati).</p>
+
+                <p><strong>Come funziona?</strong> Il kernel "scorre" sopra ogni pixel dell'immagine originale. Per ogni posizione, il kernel si sovrappone a una piccola porzione dell'immagine. I valori numerici del kernel vengono poi utilizzati per calcolare un nuovo valore per il pixel centrale di quella porzione.</p>
+                <p><strong>A cosa servono i numeri nel kernel?</strong> I numeri nel kernel non sono casuali! Sono scelti appositamente per ottenere un effetto specifico sull'immagine. Ad esempio, un kernel con certi numeri potrebbe sfocare l'immagine, mentre un altro con numeri diversi potrebbe evidenziarne i contorni. La dimensione del kernel influenza l'area di pixel vicini considerata per calcolare il nuovo valore del pixel: un kernel più grande considera un intorno più ampio.</p>
+            </section>
+
+            <section id="convoluzione2d">
+                <h2>La convoluzione 2D: l'operazione matematica</h2>
+                <p>Ora che sappiamo cos'è un kernel, parliamo dell'operazione che lo fa funzionare: la <strong>convoluzione 2D</strong>. Matematicamente, l'operazione di convoluzione discreta 2D tra un'immagine \(I\) e un kernel \(K\) per calcolare il valore di un pixel \((i,j)\) nell'immagine di output è definita come:</p>
+                
+                <div class="equation">
+                  $$ (I * K)(i, j) = \sum_{m}\sum_{n} I(i-m, j-n) K(m, n) $$
+                </div>
+
+                <p>Spieghiamo i termini di questa equazione:</p>
+                <ul>
+                    <li>L'espressione \( (I * K)(i, j) \) rappresenta il valore del pixel alle coordinate \( (i, j) \) nell'immagine risultante dopo l'applicazione della convoluzione.</li>
+                    <li>La lettera \( I \) indica l'immagine di input originale. L'espressione \( I(i-m, j-n) \) si riferisce al valore di un pixel dell'immagine di input.</li>
+                    <li>La lettera \( K \) indica il nostro kernel (o maschera). L'espressione \( K(m, n) \) è il valore di un elemento del kernel.</li>
+                    <li>I simboli \( \sum_{m}\sum_{n} \) rappresentano una doppia sommatoria (la lettera greca sigma maiuscola usata due volte). Questa operazione indica che dobbiamo sommare tutti i prodotti dei termini \(I(i-m, j-n)\) e \(K(m,n)\) per tutte le possibili combinazioni degli indici \(m\) e \(n\) (che scorrono sulle dimensioni del kernel).</li>
+                    <li>Le lettere \(i, j\) sono le coordinate del pixel che stiamo calcolando nell'immagine di output.</li>
+                    <li>Le lettere \(m, n\) sono le coordinate che vengono usate per scorrere sugli elementi del kernel.</li>
+                </ul>
+                <p>In pratica, questa formula descrive il processo che abbiamo visto: per ogni pixel dell'immagine di output, sovrapponiamo il kernel all'area corrispondente dell'immagine di input, moltiplichiamo i valori del kernel per i valori dei pixel sottostanti e sommiamo tutti questi prodotti.</p>
+                <div class="image-container">
+                     <img src="https://upload.wikimedia.org/wikipedia/commons/1/19/2D_Convolution_Animation.gif" alt="Animazione della convoluzione 2D: un kernel 3x3 scorre su una matrice di input per produrre una matrice di output.">
+                     <p>Animazione che illustra l'operazione di convoluzione 2D.</p>
+                </div>
+            </section>
+
+            <section id="funzionamento-filtri"> 
+                
+                
+                <div class="lab-container"> <h3>Laboratorio: esplora il kernel</h3>
+                    <div class="explore-kernel-lab"> 
+                        <div style="flex: 1; min-width: 280px;">
+                            <p>Inserisci i valori del tuo kernel 3x3 e osserva come viene calcolato il pixel centrale (50) della porzione di immagine.</p>
+                            <h4>Valori kernel 3x3:</h4>
+                            <div class="interactive-grid"> 
+                                <table class="kernel-input-table"> <tr>
+                                        <td><input type="number" id="k00" value="0" step="any"></td>
+                                        <td><input type="number" id="k01" value="0" step="any"></td>
+                                        <td><input type="number" id="k02" value="0" step="any"></td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="number" id="k10" value="0" step="any"></td>
+                                        <td><input type="number" id="k11" value="1" step="any"></td>
+                                        <td><input type="number" id="k12" value="0" step="any"></td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="number" id="k20" value="0" step="any"></td>
+                                        <td><input type="number" id="k21" value="0" step="any"></td>
+                                        <td><input type="number" id="k22" value="0" step="any"></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <h4>Porzione immagine 3x3:</h4>
+                            <table class="interactive-grid" id="imagePatchTable"> 
+                                <tr> 
+                                    <td id="p00" class="gray-1">10</td> <td id="p01" class="gray-2">20</td> <td id="p02" class="gray-3">30</td> 
+                                </tr>
+                                <tr> 
+                                    <td id="p10" class="gray-4">40</td> <td id="p11" class="gray-5">50</td> <td id="p12" class="gray-6">60</td> 
+                                </tr>
+                                <tr> 
+                                    <td id="p20" class="gray-7">70</td> <td id="p21" class="gray-8">80</td> <td id="p22" class="gray-9">90</td> 
+                                </tr>
+                            </table>
+                             </div>
+                        <div style="flex: 1; min-width: 280px;">
+                             <h4>Dettaglio calcoli:</h4>
+                            <div class="calculation-details" id="calculationSteps">
+                                <p>I calcoli appariranno qui...</p>
+                            </div>
+                            <button onclick="applyBasicKernelLab()">Applica Kernel</button>
+                            <div class="result-box" id="kernelResult">Risultato: ?</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="normalizzazione"> 
+                <h2>Quando e come si normalizza?</h2>
+                <p>La normalizzazione è un passaggio importante quando si usano i filtri convoluzionali, per due ragioni principali:</p>
+                <ul>
+                    <li><strong>Per preservare la luminosità dell'immagine:</strong> Se la somma dei valori nel kernel non è 1 (e non è 0), l'immagine risultante potrebbe essere più chiara o più scura. Normalizzare il kernel (dividendo ogni suo elemento per la somma totale) fa sì che la somma diventi 1, mantenendo la luminosità.</li>
+                    <li><strong>Per mantenere i valori dei pixel in un intervallo valido:</strong> I pixel di un'immagine hanno solitamente valori in un intervallo fisso (es. 0-255). La convoluzione può produrre valori esterni a questo. Per correggerli si usano: 
+                        <ul>
+                            <li><strong>Clipping:</strong> I valori fuori intervallo sono "tagliati" al minimo (0) o al massimo (255). È semplice ma può causare perdita di dettagli.</li>
+                            <li><strong>Scaling (Normalizzazione Min-Max):</strong> I valori vengono ridistribuiti per rientrare nell'intervallo desiderato, preservando meglio le variazioni relative di intensità.</li>
+                        </ul>
+                    </li>
+                </ul>
+                <p><strong>Esempio di normalizzazione del kernel (per un filtro di media):</strong></p>
+                <div class="matrix-comparison-container">
+                    <div>
+                        <p>kernel non normalizzato (somma=9):</p>
+                        <table class="kernel-table">
+                            <tr><td>1</td><td>1</td><td>1</td></tr>
+                            <tr><td>1</td><td>1</td><td>1</td></tr>
+                            <tr><td>1</td><td>1</td><td>1</td></tr>
+                        </table>
+                    </div>
+                    <div>
+                        <p>kernel normalizzato (somma=1):</p>
+                        <table class="kernel-table">
+                            <tr><td>1/9</td><td>1/9</td><td>1/9</td></tr>
+                            <tr><td>1/9</td><td>1/9</td><td>1/9</td></tr>
+                            <tr><td>1/9</td><td>1/9</td><td>1/9</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="bordi">
+                <h2>Gestione bordi immagini</h2>
+                <p>Quando il kernel "scorre" sull'immagine, sorge un problema ai bordi: cosa succede quando il kernel si sovrappone parzialmente all'immagine perché non ci sono abbastanza pixel circostanti per coprire interamente il kernel? Questa situazione è comune quando il centro del kernel è posizionato vicino o sui pixel del bordo dell'immagine.</p>
+                
+                <div class="image-container" style="align-items: flex-start; flex-direction: column; margin-top: 50px;"> 
+                    <div style="position: relative; width: calc(7 * 30px + 2px); height: calc(7 * 30px + 2px); margin: 0 0 30px 0;"> 
+                        <table class="padding-demo-table padding-demo-image" style="position: absolute; top: 0; left: 0; border-spacing: 0; width: calc(7 * 30px); height: calc(7 * 30px); margin:0;">
+                            <tbody>
+                                <tr> <script>for(let c=0; c<7; c++) document.write('<td>I</td>');</script> </tr>
+                                <tr> <script>for(let c=0; c<7; c++) document.write('<td>I</td>');</script> </tr>
+                                <tr> <script>for(let c=0; c<7; c++) document.write('<td>I</td>');</script> </tr>
+                                <tr> <script>for(let c=0; c<7; c++) document.write('<td>I</td>');</script> </tr>
+                                <tr> <script>for(let c=0; c<7; c++) document.write('<td>I</td>');</script> </tr>
+                                <tr> <script>for(let c=0; c<7; c++) document.write('<td>I</td>');</script> </tr>
+                                <tr> <script>for(let c=0; c<7; c++) document.write('<td>I</td>');</script> </tr>
+                            </tbody>
+                        </table>
+                        <table class="padding-demo-table padding-demo-kernel" style="position: absolute; top: -30px; left: -30px; border-spacing: 0; width: calc(3 * 30px); height: calc(3 * 30px); margin:0;">
+                            <tbody>
+                                <tr> <td class="outside-image">K</td> <td class="outside-image">K</td> <td class="outside-image">K</td> </tr>
+                                <tr> <td class="outside-image">K</td> <td>K</td>                      <td>K</td>                      </tr>
+                                <tr> <td class="outside-image">K</td> <td>K</td>                      <td>K</td>                      </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p style="margin-top: 0;">Illustrazione di un kernel 3x3 (blu) posizionato sul bordo di un'immagine 7x7 (grigia).<br>Le celle "K" con sfondo azzurro indicano la parte del kernel che cade fuori dall'immagine.</p>
+                </div>
+
+                <p>Per risolvere questo problema, si utilizzano diverse tecniche di <strong>padding</strong>. Il padding consiste nell'aggiungere valori fittizi attorno ai bordi dell'immagine originale, creando così un'immagine "estesa" su cui il kernel può operare completamente anche quando il suo centro è su un pixel di bordo. Le scelte più comuni sono:</p>
+                <ul>
+                    <li><strong>Zero-padding (Constant padding):</strong> Si aggiungono pixel con un valore costante (solitamente zero) attorno ai bordi dell'immagine. È la tecnica più semplice e comune. L'immagine di output può mantenere le stesse dimensioni dell'originale se si aggiunge un numero appropriato di bordi (es. 1 strato di zeri per un kernel 3x3).</li>
+                    <li><strong>Replicate-padding (Border replication):</strong> I valori dei pixel più esterni dell'immagine vengono replicati per creare il padding. Ad esempio, il pixel del bordo sinistro viene ripetuto per tutte le nuove colonne di padding a sinistra.</li>
+                    <li><strong>Reflect-padding (Reflection padding):</strong> I valori dei pixel vicino ai bordi vengono riflessi simmetricamente come se il bordo fosse uno specchio. Esistono varianti (es. reflect with replication of the border pixel, or reflect without).</li>
+                    <li><strong>Senza padding (Valid convolution):</strong> Non si aggiunge alcun padding. In questo caso, il kernel viene applicato solo alle posizioni in cui si sovrappone completamente all'immagine originale. Questo comporta una riduzione delle dimensioni dell'immagine di output. Ad esempio, applicando un kernel 3x3 a un'immagine 5x5 senza padding, l'immagine risultante sarà 3x3.</li>
+                </ul>
+                <p>La scelta della tecnica di padding dipende dall'applicazione specifica e dall'effetto desiderato sui bordi dell'immagine elaborata.</p>
+            </section>
+
+            <section id="esempi">
+                <h2>Esempi di filtri convoluzionali</h2>
+                <p>I valori specifici all'interno di un kernel determinano l'effetto che il filtro avrà sull'immagine. Per illustrare questi effetti, useremo come immagine di riferimento una rappresentazione pixelata di una casetta in scala di grigi (20x19 pixel). L'immagine originale sarà mostrata a sinistra e quella elaborata dal filtro a destra.</p>
+
+                <article>
+                    <h4>1. Filtro di sfocatura (Box blur)</h4>
+                    
+                    <p><strong>Kernel tipico (3x3):</strong></p>
+                    <table class="kernel-table">
+                        <tr><td>1/9</td><td>1/9</td><td>1/9</td></tr>
+                        <tr><td>1/9</td><td>1/9</td><td>1/9</td></tr>
+                        <tr><td>1/9</td><td>1/9</td><td>1/9</td></tr>
+                    </table>
+                    <p><strong>Effetto:</strong> Riduce il rumore e i dettagli fini, rendendo l'immagine più "morbida" e omogenea.</p>
+                    <div class="matrix-comparison-container">
+                        <div>
+                            <p>Casetta originale:</p>
+                            <table class="matrix-table house-matrix" id="original-house-blur-example"></table>
+                        </div>
+                        <div>
+                            <p>Casetta filtrata (Box blur):</p>
+                            <table class="matrix-table house-matrix" id="blurred-house-matrix"></table>
+                        </div>
+                    </div>
+                </article>
+
+                <article>
+                    <h4>2. Filtro di nitidezza (Sharpen)</h4>
+                     
+                    <p><strong>Kernel tipico (3x3):</strong></p>
+                    <table class="kernel-table">
+                        <tr><td>0</td><td>-1</td><td>0</td></tr>
+                        <tr><td>-1</td><td>5</td><td>-1</td></tr>
+                        <tr><td>0</td><td>-1</td><td>0</td></tr>
+                    </table>
+                    <p><strong>Effetto:</strong> Aumenta il contrasto tra i pixel adiacenti, rendendo i dettagli più evidenti.</p>
+                    <div class="matrix-comparison-container">
+                        <div>
+                            <p>Casetta originale:</p>
+                            <table class="matrix-table house-matrix" id="original-house-sharpen-example"></table>
+                        </div>
+                        <div>
+                            <p>Casetta filtrata (Sharpen):</p>
+                            <table class="matrix-table house-matrix" id="sharpened-house-matrix"></table>
+                        </div>
+                    </div>
+                </article>
+
+                <article>
+                    <h4>3. Filtri di rilievo dei bordi (Edge detection)</h4>
+                    
+                    <p><strong>Kernel tipico (3x3):</strong></p>
+                    <table class="kernel-table">
+                        <tr><td>0</td><td>1</td><td>0</td></tr>
+                        <tr><td>1</td><td>-4</td><td>1</td></tr>
+                        <tr><td>0</td><td>1</td><td>0</td></tr>
+                    </table>
+                    <p><strong>Effetto:</strong> Rileva bordi in tutte le direzioni.</p>
+                    <div class="matrix-comparison-container">
+                        <div>
+                            <p>Casetta originale:</p>
+                            <table class="matrix-table house-matrix" id="original-house-laplacian-example"></table>
+                        </div>
+                        <div>
+                            <p>Casetta filtrata (Laplaciano):</p>
+                            <table class="matrix-table house-matrix" id="laplacian-house-matrix"></table>
+                        </div>
+                    </div>
+                </article>
+                 </section> 
+                 
+                <section id="lab-avanzato-kernel-section"> 
+                    <div class="advanced-lab-container"> 
+                        <h3>Laboratorio avanzato: kernel su webcam</h3> 
+                        <div class="controls-wrapper-top">
+                             <h4>Kernel predefinito</h4>
+                            <select id="advancedKernelSelect">
+                                <option value="identity">Identità</option>
+                                <option value="blur">Sfocatura</option>
+                                <option value="sharpen">Nitidezza</option>
+                                <option value="edge">Rilevamento bordi (Laplaciano)</option>
+                                <option value="custom">Personalizzato</option>
+                            </select>
+                        </div>
+                        <div class="lab-main-area">
+                            <div class="images-display-area">
+                                <div>
+                                    <h4>Originale (webcam B&N)</h4>
+                                    <canvas id="advancedOriginalCanvas" width="350" height="350"></canvas>
+                                </div>
+                                <div>
+                                    <h4>Elaborata (webcam con kernel)</h4>
+                                    <canvas id="advancedProcessedCanvas" width="350" height="350"></canvas>
+                                </div>
+                            </div>
+                            <div class="kernel-input-area">
+                                 <h4>Definisci kernel personalizzato:</h4>
+                                 <div class="kernel-grid" id="advancedKernelMatrix"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="sitografia">
+                    <h2>Sitografia</h2>
+                    <ul>
+                        <li><a href="https://it.wikipedia.org/wiki/Matrice_di_convoluzione" target="_blank" rel="noopener noreferrer">Matrice di convoluzione - Wikipedia</a></li>
+                        <li><a href="https://setosa.io/ev/image-kernels/" target="_blank" rel="noopener noreferrer">Image Kernels Explained Visually - setosa.io</a></li>
+                    </ul>
+                </section>
+        </div> 
+    </div> 
+
+    <footer>
+        <p style="font-size: 0.8em;">Filtri convoluzionali - Dario Rabatti & David Obexer - Maggio 2025</p>
+    </footer>
+
+    <script>
+        const grayscaleMap = {
+            '0': 'gs0', '1': 'gs1', '2': 'gs2', '3': 'gs3', '4': 'gs4', 
+            '5': 'gs5', '6': 'gs6', '7': 'gs7', '8': 'gs8', '9': 'gs9', 
+            'E': 'g-grass' 
+        };
+
+        const originalHouseData = [
+            ['2','2','2','2','2','2','2','2','2','2','2','2','2','0','0','0','0','2','2'], 
+            ['2','2','2','2','2','2','2','2','2','2','2','2','0','0','0','0','0','2','2'],
+            ['2','2','2','2','2','2','2','2','2','2','2','2','8','0','0','0','2','2'],
+            ['2','2','2','2','2','2','2','2','2','2','2','2','8','0','2','2','2','2'],
+            ['2','2','2','2','2','2','2','7','7','7','7','7','8','2','2','2','2','2','2'], 
+            ['2','2','2','2','2','2','7','7','7','7','7','7','7','7','2','2','2','2','2'],
+            ['2','2','2','2','2','7','7','7','7','7','7','7','7','7','7','2','2','2','2'],
+            ['2','2','2','2','7','7','7','7','7','7','7','7','7','7','7','7','2','2','2'],
+            ['2','2','2','2','4','4','4','4','4','4','4','4','4','4','4','4','2','2','2'], 
+            ['2','2','2','2','4','4','4','4','4','4','4','4','4','4','4','4','2','2','2'],
+            ['2','2','2','2','4','4','7','7','4','4','4','4','7','7','4','4','2','2','2'], 
+            ['2','2','2','2','4','4','7','7','4','4','4','4','7','7','4','4','2','2','2'],
+            ['2','2','2','2','4','4','4','4','4','9','9','4','4','4','4','4','2','2','2'], 
+            ['2','2','2','2','4','4','4','4','4','9','9','4','4','4','4','4','2','2','2'],
+            ['2','2','2','2','4','4','4','4','4','9','9','4','4','4','4','4','2','2','2'],
+            ['E','E','E','E','E','E','E','E','E','E','E','E','E','E','E','E','E','E','E'],
+            ['E','E','E','E','E','E','E','E','E','E','E','E','E','E','E','E','E','E','E'],
+            ['E','E','E','E','E','E','E','E','E','E','E','E','E','E','E','E','E','E','E'],
+            ['E','E','E','E','E','E','E','E','E','E','E','E','E','E','E','E','E','E','E'],
+            ['E','E','E','E','E','E','E','E','E','E','E','E','E','E','E','E','E','E','E']
+        ];
+
+        function populateHouseMatrix(tableId, data) {
+            const table = document.getElementById(tableId);
+            if (!table) {
+                console.error("Table with id not found:", tableId);
+                return;
+            }
+            let tableHtml = "";
+            for (let r = 0; r < data.length; r++) {
+                tableHtml += "<tr>";
+                for (let c = 0; c < data[r].length; c++) {
+                    let cellClass = grayscaleMap[data[r][c].toString()] || 'gs2'; 
+                    tableHtml += `<td class="${cellClass}"></td>`;
+                }
+                tableHtml += "</tr>";
+            }
+            table.innerHTML = tableHtml;
+        }
+
+        function applyConvolution(imageData, kernel) {
+            const imageHeight = imageData.length;
+            const imageWidth = imageData[0].length;
+            const kernelHeight = kernel.length;
+            const kernelWidth = kernel[0].length;
+            const kernelCenterY = Math.floor(kernelHeight / 2);
+            const kernelCenterX = Math.floor(kernelWidth / 2);
+            const grassNumericalValue = 5; 
+            const defaultPixelValue = 2; 
+
+            const outputImage = [];
+
+            for (let y = 0; y < imageHeight; y++) {
+                outputImage[y] = [];
+                for (let x = 0; x < imageWidth; x++) {
+                    let sum = 0;
+                    for (let ky = 0; ky < kernelHeight; ky++) {
+                        for (let kx = 0; kx < kernelWidth; kx++) {
+                            const imgY = y + (ky - kernelCenterY);
+                            const imgX = x + (kx - kernelCenterX);
+
+                            const clampedY = Math.max(0, Math.min(imgY, imageHeight - 1));
+                            const clampedX = Math.max(0, Math.min(imgX, imageWidth - 1));
+                            
+                            let pixelChar = imageData[clampedY][clampedX];
+                            let pixelValue;
+
+                            if (pixelChar === 'E') {
+                                pixelValue = grassNumericalValue;
+                            } else {
+                                pixelValue = parseInt(pixelChar);
+                            }
+                            
+                            if (isNaN(pixelValue)) {
+                                console.warn(`Valore non numerico incontrato: ${pixelChar} a (${clampedY},${clampedX}). Uso il default: ${defaultPixelValue}`);
+                                pixelValue = defaultPixelValue; 
+                            }
+                            sum += pixelValue * kernel[ky][kx];
+                        }
+                    }
+                    outputImage[y][x] = Math.max(0, Math.min(9, Math.round(sum)));
+                }
+            }
+            return outputImage;
+        }
+        
+        function applyLaplacianConvolution(imageData, kernel) {
+            const imageHeight = imageData.length;
+            const imageWidth = imageData[0].length;
+            const kernelHeight = kernel.length;
+            const kernelWidth = kernel[0].length;
+            const kernelCenterY = Math.floor(kernelHeight / 2);
+            const kernelCenterX = Math.floor(kernelWidth / 2);
+            const grassNumericalValue = 5; 
+            const defaultPixelValue = 2;
+            const outputImage = [];
+
+            for (let y = 0; y < imageHeight; y++) {
+                outputImage[y] = [];
+                for (let x = 0; x < imageWidth; x++) {
+                    let sum = 0;
+                    for (let ky = 0; ky < kernelHeight; ky++) {
+                        for (let kx = 0; kx < kernelWidth; kx++) {
+                            const imgY = y + (ky - kernelCenterY);
+                            const imgX = x + (kx - kernelCenterX);
+                            const clampedY = Math.max(0, Math.min(imgY, imageHeight - 1));
+                            const clampedX = Math.max(0, Math.min(imgX, imageWidth - 1));
+                            
+                            let pixelChar = imageData[clampedY][clampedX];
+                            let pixelValue;
+
+                            if (pixelChar === 'E') {
+                                pixelValue = grassNumericalValue;
+                            } else {
+                                pixelValue = parseInt(pixelChar);
+                            }
+                             if (isNaN(pixelValue)) {
+                                pixelValue = defaultPixelValue; 
+                            }
+                            sum += pixelValue * kernel[ky][kx];
+                        }
+                    }
+                    let edgeStrength = Math.abs(sum);
+                    if (edgeStrength > 4) outputImage[y][x] = 9; 
+                    else if (edgeStrength > 2) outputImage[y][x] = 7; 
+                    else outputImage[y][x] = 2; 
+                }
+            }
+            return outputImage;
+        }
+
+
+        // --- Script for Basic Kernel Lab ---
+        function applyBasicKernelLab() {
+            const k00_el = document.getElementById('k00'); 
+            if (!k00_el) return; 
+
+            const kernelValues = [ 
+                [parseFloat(k00_el.value) || 0, parseFloat(document.getElementById('k01').value) || 0, parseFloat(document.getElementById('k02').value) || 0],
+                [parseFloat(document.getElementById('k10').value) || 0, parseFloat(document.getElementById('k11').value) || 0, parseFloat(document.getElementById('k12').value) || 0],
+                [parseFloat(document.getElementById('k20').value) || 0, parseFloat(document.getElementById('k21').value) || 0, parseFloat(document.getElementById('k22').value) || 0]
+            ];
+            const imagePatchValues = [ 
+                [parseInt(document.getElementById('p00').innerText), parseInt(document.getElementById('p01').innerText), parseInt(document.getElementById('p02').innerText)],
+                [parseInt(document.getElementById('p10').innerText), parseInt(document.getElementById('p11').innerText), parseInt(document.getElementById('p12').innerText)],
+                [parseInt(document.getElementById('p20').innerText), parseInt(document.getElementById('p21').innerText), parseInt(document.getElementById('p22').innerText)]
+            ];
+            
+            let convolvedValue = 0;
+            let calculationStepsHtml = "<p><strong>Moltiplicazioni (Kernel * Immagine):</strong></p>";
+            let sumTerms = [];
+
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    const kernelVal = kernelValues[i][j];
+                    const imageVal = imagePatchValues[i][j];
+                    const product = kernelVal * imageVal;
+                    convolvedValue += product;
+                    calculationStepsHtml += `<p>K[${i}][${j}] * I[${i}][${j}] = ${kernelVal.toFixed(2)} * ${imageVal} = ${product.toFixed(2)}</p>`;
+                    sumTerms.push(product.toFixed(2));
+                }
+            }
+            calculationStepsHtml += "<p><strong>Somma dei prodotti:</strong></p>";
+            calculationStepsHtml += `<p>${sumTerms.join(' + ')} = ${convolvedValue.toFixed(2)}</p>`;
+
+            const kernelResultEl = document.getElementById('kernelResult');
+            if (kernelResultEl) kernelResultEl.textContent = 'Risultato: ' + convolvedValue.toFixed(2);
+            
+            const calculationStepsDiv = document.getElementById('calculationSteps');
+            if (calculationStepsDiv) calculationStepsDiv.innerHTML = calculationStepsHtml;
+        }
+
+        // --- Script for Advanced Kernel Lab ---
+        const advOriginalCanvas = document.getElementById('advancedOriginalCanvas');
+        const advProcessedCanvas = document.getElementById('advancedProcessedCanvas');
+        const advOriginalCtx = advOriginalCanvas ? advOriginalCanvas.getContext('2d', { willReadFrequently: true }) : null;
+        const advProcessedCtx = advProcessedCanvas ? advProcessedCanvas.getContext('2d') : null;
+        const advKernelMatrixEl = document.getElementById('advancedKernelMatrix');
+        let videoStream = null; 
+        let videoElement = null; 
+
+        
+        const advKernels = {
+            identity: [ [0, 0, 0], [0, 1, 0], [0, 0, 0] ],
+            blur: [ [1/9, 1/9, 1/9], [1/9, 1/9, 1/9], [1/9, 1/9, 1/9] ],
+            sharpen: [ [0, -1, 0], [-1, 5, -1], [0, -1, 0] ],
+            edge: [ [-1, -1, -1], [-1, 8, -1], [-1, -1, -1] ] 
+        };
+
+        function initAdvancedKernelMatrix() {
+            if (!advKernelMatrixEl) return;
+            advKernelMatrixEl.innerHTML = '';
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    input.value = advKernels.identity[i][j]; 
+                    input.step = '0.1'; 
+                    input.dataset.row = i;
+                    input.dataset.col = j;
+                    input.addEventListener('input', applyAdvancedKernel);
+                    advKernelMatrixEl.appendChild(input);
+                }
+            }
+        }
+        
+        function loadAdvancedKernelPreset(preset) {
+            if (!advKernelMatrixEl || !advKernels[preset]) return;
+            const kernel = advKernels[preset]; 
+            const inputs = advKernelMatrixEl.querySelectorAll('input');
+            inputs.forEach((input, index) => {
+                const row = Math.floor(index / 3);
+                const col = index % 3;
+                input.value = kernel[row][col];
+            });
+        }
+        
+        function drawLoop() {
+            if (videoElement && !videoElement.paused && !videoElement.ended && advOriginalCtx) {
+                advOriginalCtx.fillStyle = '#f8f8f8'; // Colore di sfondo del canvas
+                advOriginalCtx.fillRect(0, 0, advOriginalCanvas.width, advOriginalCanvas.height);
+
+                const videoAspect = videoElement.videoWidth / videoElement.videoHeight;
+                const canvasAspect = advOriginalCanvas.width / advOriginalCanvas.height;
+                let drawWidth, drawHeight, offsetX, offsetY;
+
+                if (videoAspect > canvasAspect) { // Video più largo del canvas
+                    drawWidth = advOriginalCanvas.width;
+                    drawHeight = drawWidth / videoAspect;
+                    offsetX = 0;
+                    offsetY = (advOriginalCanvas.height - drawHeight) / 2;
+                } else { // Video più alto o con stesso aspect ratio
+                    drawHeight = advOriginalCanvas.height;
+                    drawWidth = drawHeight * videoAspect;
+                    offsetY = 0;
+                    offsetX = (advOriginalCanvas.width - drawWidth) / 2;
+                }
+                advOriginalCtx.drawImage(videoElement, offsetX, offsetY, drawWidth, drawHeight);
+                
+                let imageData = advOriginalCtx.getImageData(0, 0, advOriginalCanvas.width, advOriginalCanvas.height);
+                let data = imageData.data;
+                for (let i = 0; i < data.length; i += 4) {
+                    let avg = (data[i] + data[i+1] + data[i+2]) / 3;
+                    data[i] = avg;     // red
+                    data[i+1] = avg; // green
+                    data[i+2] = avg; // blue
+                }
+                advOriginalCtx.putImageData(imageData, 0, 0);
+                applyAdvancedKernel();
+            }
+            requestAnimationFrame(drawLoop);
+        }
+
+        function startCameraStreamAndProcessing() {
+            if (!advOriginalCtx || !advProcessedCtx) {
+                console.error("Canvas per il laboratorio avanzato non trovati.");
+                return;
+            }
+
+            videoElement = document.createElement('video');
+            videoElement.setAttribute('playsinline', '');
+            videoElement.setAttribute('autoplay', '');
+            videoElement.style.display = 'none'; 
+            document.body.appendChild(videoElement);
+
+
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } })
+                    .then(function(stream) {
+                        videoStream = stream;
+                        videoElement.srcObject = stream;
+                        videoElement.play(); 
+                        videoElement.onloadedmetadata = () => {
+                            requestAnimationFrame(drawLoop);
+                        };
+                    })
+                    .catch(function(err) {
+                        console.error("Errore nell'accesso alla webcam: ", err);
+                        advOriginalCtx.fillStyle = '#AAAAAA';
+                        advOriginalCtx.fillRect(0,0, advOriginalCanvas.width, advOriginalCanvas.height);
+                        advOriginalCtx.fillStyle = 'black';
+                        advOriginalCtx.textAlign = 'center';
+                        advOriginalCtx.font = '14px Helvetica, Arial, sans-serif';
+                        advOriginalCtx.fillText('Webcam non accessibile.', advOriginalCanvas.width/2, advOriginalCanvas.height/2 - 10);
+                        advOriginalCtx.fillText('Controlla i permessi.', advOriginalCanvas.width/2, advOriginalCanvas.height/2 + 10);
+                    });
+            } else {
+                console.error("getUserMedia non è supportato dal browser.");
+                advOriginalCtx.fillStyle = '#AAAAAA';
+                advOriginalCtx.fillRect(0,0, advOriginalCanvas.width, advOriginalCanvas.height);
+                advOriginalCtx.fillStyle = 'black';
+                advOriginalCtx.textAlign = 'center';
+                advOriginalCtx.font = '14px Helvetica, Arial, sans-serif';
+                advOriginalCtx.fillText('Accesso alla webcam', advOriginalCanvas.width/2, advOriginalCanvas.height/2 - 10);
+                advOriginalCtx.fillText('non supportato dal browser.', advOriginalCanvas.width/2, advOriginalCanvas.height/2 + 10);
+            }
+        }
+        
+        function applyAdvancedKernel() {
+            if (!advOriginalCtx || !advProcessedCtx || !advKernelMatrixEl || !advOriginalCanvas || !advProcessedCanvas) return;
+
+            const currentKernel = getCurrentAdvancedKernel(); 
+            try {
+                 const imageData = advOriginalCtx.getImageData(0, 0, advOriginalCanvas.width, advOriginalCanvas.height);
+                 const processedData = advOriginalCtx.createImageData(advOriginalCanvas.width, advOriginalCanvas.height);
+                const w = imageData.width;
+                const h = imageData.height;
+
+                for (let y = 0; y < h; y++) {
+                    for (let x = 0; x < w; x++) {
+                        for (let c = 0; c < 3; c++) { 
+                            let sum = 0;
+                            for (let ky = -1; ky <= 1; ky++) {
+                                for (let kx = -1; kx <= 1; kx++) {
+                                    const pixelY = Math.min(h - 1, Math.max(0, y + ky)); 
+                                    const pixelX = Math.min(w - 1, Math.max(0, x + kx)); 
+                                    const pixelIdx = (pixelY * w + pixelX) * 4 + c; 
+                                    const kernelVal = currentKernel[ky + 1][kx + 1]; 
+                                    sum += imageData.data[pixelIdx] * kernelVal;
+                                }
+                            }
+                            const outIdx = (y * w + x) * 4 + c;
+                            processedData.data[outIdx] = Math.max(0, Math.min(255, sum)); 
+                        }
+                        processedData.data[(y * w + x) * 4 + 3] = imageData.data[(y * w + x) * 4 + 3]; 
+                    }
+                }
+                advProcessedCtx.putImageData(processedData, 0, 0);
+            } catch (e) {
+                console.error("Errore durante l'elaborazione dell'immagine (getImageData o putImageData): ", e);
+                 if (advProcessedCtx) {
+                    advProcessedCtx.clearRect(0, 0, advProcessedCanvas.width, advProcessedCanvas.height);
+                    advProcessedCtx.fillStyle = '#EFEFEF';
+                    advProcessedCtx.fillRect(0,0,advProcessedCanvas.width, advProcessedCanvas.height); 
+                    advProcessedCtx.fillStyle = '#AAAAAA';
+                    advProcessedCtx.textAlign = 'center';
+                    advProcessedCtx.font = "16px Arial";
+                    advProcessedCtx.fillText('Errore elaborazione', advProcessedCanvas.width/2, advProcessedCanvas.height/2);
+                }
+            }
+        }
+        
+        function getCurrentAdvancedKernel() {
+            if (!advKernelMatrixEl) return [[0,0,0],[0,1,0],[0,0,0]]; 
+            const kernelOutput = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]; 
+            const inputs = advKernelMatrixEl.querySelectorAll('input');
+            inputs.forEach(input => {
+                const row = parseInt(input.dataset.row);
+                const col = parseInt(input.dataset.col);
+                kernelOutput[row][col] = parseFloat(input.value) || 0; 
+            });
+            return kernelOutput;
+        }
+        
+        const advKernelSelectEl = document.getElementById('advancedKernelSelect');
+        if (advKernelSelectEl) {
+            advKernelSelectEl.addEventListener('change', function() {
+                if (this.value !== 'custom') {
+                    loadAdvancedKernelPreset(this.value);
+                }
+                // applyAdvancedKernel(); // Viene già chiamato nel drawLoop se il video è attivo
+            });
+        }
+
+        function populateTOC() {
+            const tocList = document.getElementById('toc-list');
+            if (!tocList) return;
+            tocList.innerHTML = ''; 
+            const sections = document.querySelectorAll('.container > section[id]');
+            sections.forEach(section => {
+                const titleElement = section.querySelector('h2'); 
+                let mainTitleElement = titleElement;
+                
+                if (!mainTitleElement) { 
+                    const labH3 = section.querySelector('.lab-container > h3, .advanced-lab-container > h3');
+                    if(labH3) {
+                        mainTitleElement = labH3;
+                    }
+                }
+
+                if (mainTitleElement) {
+                    const listItem = document.createElement('li');
+                    const link = document.createElement('a');
+                    link.href = `#${section.id}`;
+                    link.textContent = mainTitleElement.textContent;
+                    listItem.appendChild(link);
+                    tocList.appendChild(listItem);
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            populateTOC(); 
+            
+            populateHouseMatrix('original-house-blur-example', originalHouseData);
+            populateHouseMatrix('original-house-sharpen-example', originalHouseData);
+            populateHouseMatrix('original-house-laplacian-example', originalHouseData);
+
+            const blurKernel = [[1/9, 1/9, 1/9], [1/9, 1/9, 1/9], [1/9, 1/9, 1/9]];
+            const sharpenKernel = [[0, -1, 0], [-1, 5, -1], [0, -1, 0]];
+            const laplacianKernel = [[0, 1, 0], [1, -4, 1], [0, 1, 0]];
+            
+            populateHouseMatrix('blurred-house-matrix', applyConvolution(originalHouseData, blurKernel));
+            populateHouseMatrix('sharpened-house-matrix', applyConvolution(originalHouseData, sharpenKernel));
+            populateHouseMatrix('laplacian-house-matrix', applyLaplacianConvolution(originalHouseData, laplacianKernel));
+
+
+            const k00_el_init = document.getElementById('k00'); 
+            if (k00_el_init) { 
+                 applyBasicKernelLab(); 
+            }
+            
+            const imageTableForPaddingDemo = document.querySelector('.padding-demo-table.padding-demo-image');
+            if (imageTableForPaddingDemo) {
+                const cellsToHideTextInPaddingDemo = [
+                    {r:0, c:0}, {r:0, c:1}, 
+                    {r:1, c:0}, {r:1, c:1}  
+                ];
+                cellsToHideTextInPaddingDemo.forEach(pos => {
+                    if (imageTableForPaddingDemo.rows[pos.r] && imageTableForPaddingDemo.rows[pos.r].cells[pos.c]) {
+                        imageTableForPaddingDemo.rows[pos.r].cells[pos.c].classList.add('hidden-text');
+                    }
+                });
+            }
+
+
+            if (advOriginalCanvas && advProcessedCanvas && advKernelMatrixEl) { 
+                initAdvancedKernelMatrix();
+                const initialKernelKey = document.getElementById('advancedKernelSelect').value;
+                startCameraStreamAndProcessing(); 
+                if (initialKernelKey !== 'custom') {
+                    loadAdvancedKernelPreset(initialKernelKey);
+                }
+            }
+        });
+
+        window.addEventListener('beforeunload', () => {
+            if (videoStream) {
+                videoStream.getTracks().forEach(track => track.stop());
+            }
+        });
+
+    </script>
+</body>
+</html>
