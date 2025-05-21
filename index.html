@@ -516,7 +516,7 @@
         .advanced-lab-container .kernel-grid { 
             display: grid;
             grid-template-columns: repeat(3, 45px); 
-            grid-template-rows: repeat(3, 45px);    
+            grid-template-rows: repeat(3, 45px);     
             gap: 0; 
             margin: 15px 0; 
             /* border: 1px solid #007bff; /* Rimosso bordo esterno */
@@ -693,30 +693,6 @@
                 <p><strong>A cosa servono i numeri nel kernel?</strong> I numeri nel kernel non sono casuali! Sono scelti appositamente per ottenere un effetto specifico sull'immagine. Ad esempio, un kernel con certi numeri potrebbe sfocare l'immagine, mentre un altro con numeri diversi potrebbe evidenziarne i contorni. La dimensione del kernel influenza l'area di pixel vicini considerata per calcolare il nuovo valore del pixel: un kernel più grande considera un intorno più ampio.</p>
             </section>
 
-            <section id="convoluzione2d">
-                <h2>La convoluzione 2D: l'operazione matematica</h2>
-                <p>Ora che sappiamo cos'è un kernel, parliamo dell'operazione che lo fa funzionare: la <strong>convoluzione 2D</strong>. Matematicamente, l'operazione di convoluzione discreta 2D tra un'immagine \(I\) e un kernel \(K\) per calcolare il valore di un pixel \((i,j)\) nell'immagine di output è definita come:</p>
-                
-                <div class="equation">
-                  $$ (I * K)(i, j) = \sum_{m}\sum_{n} I(i-m, j-n) K(m, n) $$
-                </div>
-
-                <p>Spieghiamo i termini di questa equazione:</p>
-                <ul>
-                    <li>L'espressione \( (I * K)(i, j) \) rappresenta il valore del pixel alle coordinate \( (i, j) \) nell'immagine risultante dopo l'applicazione della convoluzione.</li>
-                    <li>La lettera \( I \) indica l'immagine di input originale. L'espressione \( I(i-m, j-n) \) si riferisce al valore di un pixel dell'immagine di input.</li>
-                    <li>La lettera \( K \) indica il nostro kernel (o maschera). L'espressione \( K(m, n) \) è il valore di un elemento del kernel.</li>
-                    <li>I simboli \( \sum_{m}\sum_{n} \) rappresentano una doppia sommatoria (la lettera greca sigma maiuscola usata due volte). Questa operazione indica che dobbiamo sommare tutti i prodotti dei termini \(I(i-m, j-n)\) e \(K(m,n)\) per tutte le possibili combinazioni degli indici \(m\) e \(n\) (che scorrono sulle dimensioni del kernel).</li>
-                    <li>Le lettere \(i, j\) sono le coordinate del pixel che stiamo calcolando nell'immagine di output.</li>
-                    <li>Le lettere \(m, n\) sono le coordinate che vengono usate per scorrere sugli elementi del kernel.</li>
-                </ul>
-                <p>In pratica, questa formula descrive il processo che abbiamo visto: per ogni pixel dell'immagine di output, sovrapponiamo il kernel all'area corrispondente dell'immagine di input, moltiplichiamo i valori del kernel per i valori dei pixel sottostanti e sommiamo tutti questi prodotti.</p>
-                <div class="image-container">
-                     <img src="https://upload.wikimedia.org/wikipedia/commons/1/19/2D_Convolution_Animation.gif" alt="Animazione della convoluzione 2D: un kernel 3x3 scorre su una matrice di input per produrre una matrice di output.">
-                     <p>Animazione che illustra l'operazione di convoluzione 2D.</p>
-                </div>
-            </section>
-
             <section id="funzionamento-filtri"> 
                 
                 
@@ -768,37 +744,113 @@
                 </div>
             </section>
             
+            <section id="convoluzione2d">
+                <h2>L'Operazione Matematica: Correlazione Incrociata (Comunemente detta Convoluzione)</h2>
+                <p>
+                    Ora che sappiamo cos'è un kernel, parliamo dell'operazione matematica fondamentale.
+                    Nell'elaborazione pratica delle immagini e nelle reti neurali, l'operazione comunemente chiamata "convoluzione 2D"
+                    è tecnicamente una <strong>correlazione incrociata 2D</strong>. La differenza principale è che,
+                    nella correlazione incrociata, il kernel non viene ribaltato (o ruotato di 180 gradi) prima dell'applicazione,
+                    a differenza della convoluzione matematica formale. Questa scelta semplifica l'implementazione e, nel contesto
+                    delle reti neurali, permette al kernel di apprendere direttamente i pesi nella loro forma finale.
+                </p>
+                
+                <div class="equation">
+                  $$ (I * K)(i, j) = \sum_{u}\sum_{v} I(i+u, j+v) K(u,v) $$
+                </div>
+
+                <p>Spieghiamo i termini di questa formula, dove l'operatore \( * \) qui denota la correlazione incrociata:</p>
+                <ul>
+                    <li>L'espressione \( (I * K)(i, j) \) rappresenta il valore del pixel alle coordinate \( (i, j) \) nell'immagine risultante dopo l'applicazione dell'operazione.</li>
+                    <li>La lettera \( I \) indica l'immagine di input originale.</li>
+                    <li>La lettera \( K \) indica il nostro kernel (o maschera).</li>
+                    <li>Le lettere \( u, v \) sono gli indici che specificano la posizione all'interno del kernel, relativi al suo centro. Ad esempio, per un kernel 3x3, \( u \) e \( v \) assumono tipicamente i valori {-1, 0, 1}.</li>
+                    <li>L'espressione \( K(u,v) \) è il valore dell'elemento del kernel alla posizione relativa \( (u,v) \) rispetto al centro del kernel. Ad esempio, \( K(0,0) \) è il valore centrale del kernel.</li>
+                    <li>L'espressione \( I(i+u, j+v) \) si riferisce al valore del pixel dell'immagine di input che si trova "sotto" l'elemento \( K(u,v) \) quando il centro del kernel (corrispondente a \( K(0,0) \)) è allineato con il pixel \( (i,j) \) dell'immagine di input che stiamo calcolando.</li>
+                    <li>I simboli \( \sum_{u}\sum_{v} \) rappresentano una doppia sommatoria, che indica di sommare tutti i prodotti dei termini \(I(i+u, j+v)\) e \(K(u,v)\) per tutte le possibili posizioni \( (u,v) \) del kernel.</li>
+                </ul>
+                <p>
+                    In sostanza, per calcolare il valore di un pixel nell'immagine di output, si "centra" idealmente il kernel sul pixel corrispondente nell'immagine di input.
+                    Quindi, si moltiplica ciascun elemento del kernel per il valore del pixel dell'immagine di input che si trova direttamente sotto di esso e si sommano tutti questi prodotti.
+                    Questa è l'operazione di <strong>correlazione incrociata</strong>.
+                </p>
+                <p>
+                    La <strong>convoluzione matematica formale</strong>, invece, richiederebbe un ribaltamento (rotazione di 180 gradi) del kernel prima di eseguire questa operazione di somma ponderata.
+                    La formula sarebbe \( (I * K)(i, j) = \sum_{u}\sum_{v} I(i-u, j-v) K(u,v) \).
+                    Tuttavia, poiché i kernel sono spesso simmetrici o i loro valori sono appresi (come nelle reti neurali, dove la rete può apprendere un kernel già "ribaltato" se necessario),
+                    la correlazione incrociata è l'operazione standard implementata e chiamata comunemente "convoluzione" in molte librerie di elaborazione di immagini e deep learning.
+                </p>
+                <div class="image-container">
+                     <img src="https://upload.wikimedia.org/wikipedia/commons/1/19/2D_Convolution_Animation.gif" alt="Animazione della convoluzione 2D: un kernel 3x3 scorre su una matrice di input per produrre una matrice di output.">
+                     <p>Animazione che illustra il meccanismo di "scorrimento" del kernel sull'immagine e l'operazione di moltiplicazione e somma.
+                        È importante notare che questa specifica animazione (proveniente da Wikipedia per "Convolution") mostra il kernel che viene prima ribaltato (ruotato di 180°),
+                        il che è corretto per la definizione matematica formale di <strong>convoluzione</strong>.
+                        Tuttavia, la formula \( (I * K)(i, j) = \sum_{u}\sum_{v} I(i+u, j+v) K(u,v) \) che abbiamo presentato,
+                        e che è comunemente usata in contesti applicativi, è quella della <strong>correlazione incrociata</strong>,
+                        dove il kernel \(K(u,v)\) viene utilizzato direttamente, senza alcun ribaltamento preventivo.
+                     </p>
+                </div>
+            </section>
+
             <section id="normalizzazione"> 
                 <h2>Quando e come si normalizza?</h2>
-                <p>La normalizzazione è un passaggio importante quando si usano i filtri convoluzionali, per due ragioni principali:</p>
+                <p>La <strong>normalizzazione</strong> è un passaggio importante quando si usano i filtri convoluzionali, per due ragioni principali:</p>
                 <ul>
-                    <li><strong>Per preservare la luminosità dell'immagine:</strong> Se la somma dei valori nel kernel non è 1 (e non è 0), l'immagine risultante potrebbe essere più chiara o più scura. Normalizzare il kernel (dividendo ogni suo elemento per la somma totale) fa sì che la somma diventi 1, mantenendo la luminosità.</li>
-                    <li><strong>Per mantenere i valori dei pixel in un intervallo valido:</strong> I pixel di un'immagine hanno solitamente valori in un intervallo fisso (es. 0-255). La convoluzione può produrre valori esterni a questo. Per correggerli si usano: 
+                    <li><strong>Per preservare la luminosità dell'immagine</strong>: Se la <strong>somma dei valori</strong> nel kernel (chiamata anche "peso" del kernel) è diversa da 1 (e non è 0 per filtri come quelli di edge detection), l'immagine risultante potrebbe apparire significativamente più chiara o più scura dell'originale. Per evitare ciò, si normalizza il kernel dividendo ogni suo elemento per la somma totale dei suoi valori. In questo modo, la somma dei nuovi elementi del kernel sarà 1, contribuendo a mantenere una luminosità generale simile a quella dell'immagine di partenza, specialmente per filtri come quelli di sfocatura.</li>
+                    <li><strong>Per mantenere i valori dei pixel in un intervallo valido</strong>: I valori dei pixel di un'immagine sono tipicamente rappresentati in un intervallo fisso (ad esempio, da 0 a 255 per immagini a 8 bit in scala di grigi). L'operazione di correlazione incrociata può produrre valori che cadono al di fuori di questo intervallo. Per riportare i valori nell'intervallo desiderato, si possono usare principalmente due tecniche:
                         <ul>
-                            <li><strong>Clipping:</strong> I valori fuori intervallo sono "tagliati" al minimo (0) o al massimo (255). È semplice ma può causare perdita di dettagli.</li>
-                            <li><strong>Scaling (Normalizzazione Min-Max):</strong> I valori vengono ridistribuiti per rientrare nell'intervallo desiderato, preservando meglio le variazioni relative di intensità.</li>
+                            <li><strong>Clipping (Taglio)</strong>: I valori che eccedono l'intervallo vengono semplicemente "tagliati" al valore minimo (es. 0) o massimo (es. 255) consentito. È una tecnica semplice ma può portare a una perdita di dettaglio nelle aree molto chiare o molto scure.</li>
+                            <li><strong>Scaling (Scalatura o Normalizzazione Min-Max)</strong>: I valori dell'immagine risultante vengono ridistribuiti linearmente per adattarsi all'intervallo desiderato (es. 0-255). Questo metodo preserva meglio le variazioni relative di intensità rispetto al clipping.</li>
                         </ul>
                     </li>
                 </ul>
-                <p><strong>Esempio di normalizzazione del kernel (per un filtro di media):</strong></p>
+                <p>Non tutti i kernel necessitano di normalizzazione della somma a 1. Ad esempio:</p>
+                <ul>
+                    <li>Un <strong>kernel identità</strong> (che lascia l'immagine invariata) ha tipicamente un 1 al centro e 0 altrove, e la sua somma è già 1.</li>
+                    <li>I <strong>kernel per il rilevamento dei bordi</strong> (come il Laplaciano o Sobel) hanno spesso una somma pari a 0. Questo è intenzionale, poiché tali filtri mirano a evidenziare le differenze di intensità (bordi), producendo valori vicini allo zero nelle aree uniformi e valori non nulli (positivi o negativi) sui bordi. L'output di questi filtri viene spesso scalato o viene preso il valore assoluto per la visualizzazione.</li>
+                    <li>I <strong>kernel di sharpening</strong> spesso hanno una somma pari a 1 per preservare la luminosità pur accentuando i dettagli.</li>
+                </ul>
+                <p><strong>Esempio di normalizzazione del kernel (per un filtro di sfocatura personalizzato):</strong></p>
+                <p>Supponiamo di avere il seguente kernel 3x3 non normalizzato:</p>
+            
                 <div class="matrix-comparison-container">
                     <div>
-                        <p>kernel non normalizzato (somma=9):</p>
+                        <p>Kernel non normalizzato:</p>
                         <table class="kernel-table">
-                            <tr><td>1</td><td>1</td><td>1</td></tr>
-                            <tr><td>1</td><td>1</td><td>1</td></tr>
-                            <tr><td>1</td><td>1</td><td>1</td></tr>
+                            <tr><td>1</td><td>2</td><td>1</td></tr>
+                            <tr><td>2</td><td>4</td><td>2</td></tr>
+                            <tr><td>1</td><td>2</td><td>1</td></tr>
                         </table>
                     </div>
                     <div>
-                        <p>kernel normalizzato (somma=1):</p>
+                        <p>Calcolo della somma:</p>
+                        <p style="text-align: left; font-weight: normal; margin-left:10px;">
+                            Somma = 1 + 2 + 1 + 2 + 4 + 2 + 1 + 2 + 1 = <strong>16</strong>
+                        </p>
+                    </div>
+                </div>
+            
+                <p>Per normalizzare questo kernel (ad esempio, per usarlo come un filtro di sfocatura che preserva la luminosità), dividiamo ciascun elemento per la somma totale dei suoi valori (16):</p>
+            
+                <div class="matrix-comparison-container">
+                    <div>
+                        <p>Kernel normalizzato (somma=1):</p>
                         <table class="kernel-table">
-                            <tr><td>1/9</td><td>1/9</td><td>1/9</td></tr>
-                            <tr><td>1/9</td><td>1/9</td><td>1/9</td></tr>
-                            <tr><td>1/9</td><td>1/9</td><td>1/9</td></tr>
+                            <tr><td>1/16</td><td>2/16</td><td>1/16</td></tr>
+                            <tr><td>2/16</td><td>4/16</td><td>2/16</td></tr>
+                            <tr><td>1/16</td><td>2/16</td><td>1/16</td></tr>
+                        </table>
+                    </div>
+                    <div>
+                        <p>Valori approssimati:</p>
+                        <table class="kernel-table">
+                            <tr><td>0.0625</td><td>0.125</td><td>0.0625</td></tr>
+                            <tr><td>0.125</td><td>0.25</td><td>0.125</td></tr>
+                            <tr><td>0.0625</td><td>0.125</td><td>0.0625</td></tr>
                         </table>
                     </div>
                 </div>
+                <p>Ora la somma degli elementi del kernel normalizzato è 1 ( (1+2+1+2+4+2+1+2+1) / 16 = 16/16 = 1 ). Applicare questo kernel tenderà a sfocare l'immagine mantenendo la sua luminosità complessiva.</p>
             </section>
 
             <section id="bordi">
@@ -821,8 +873,8 @@
                         <table class="padding-demo-table padding-demo-kernel" style="position: absolute; top: -30px; left: -30px; border-spacing: 0; width: calc(3 * 30px); height: calc(3 * 30px); margin:0;">
                             <tbody>
                                 <tr> <td class="outside-image">K</td> <td class="outside-image">K</td> <td class="outside-image">K</td> </tr>
-                                <tr> <td class="outside-image">K</td> <td>K</td>                      <td>K</td>                      </tr>
-                                <tr> <td class="outside-image">K</td> <td>K</td>                      <td>K</td>                      </tr>
+                                <tr> <td class="outside-image">K</td> <td>K</td>                             <td>K</td>                             </tr>
+                                <tr> <td class="outside-image">K</td> <td>K</td>                             <td>K</td>                             </tr>
                             </tbody>
                         </table>
                     </div>
@@ -1209,7 +1261,7 @@
                 let data = imageData.data;
                 for (let i = 0; i < data.length; i += 4) {
                     let avg = (data[i] + data[i+1] + data[i+2]) / 3;
-                    data[i] = avg;     // red
+                    data[i]     = avg;   // red
                     data[i+1] = avg; // green
                     data[i+2] = avg; // blue
                 }
@@ -1411,3 +1463,5 @@
     </script>
 </body>
 </html>
+```
+La sezione sulla normalizzazione ora include l'esempio del kernel `[[1,2,1],[2,4,2],[1,2,1]]` la cui somma è 16, e mostra come ogni elemento viene diviso per 16 per ottenere il kernel normalizzato. Questo dovrebbe chiarire meglio il concetto rispetto all'esempio preceden
