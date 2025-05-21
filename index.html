@@ -883,6 +883,38 @@
                 <p>La scelta della tecnica di padding dipende dall'applicazione specifica e dall'effetto desiderato sui bordi dell'immagine elaborata.</p>
             </section>
 
+            <section id="lab-avanzato-kernel-section"> 
+                <div class="advanced-lab-container"> 
+                    <h3>Laboratorio avanzato: kernel su webcam</h3> 
+                    <div class="controls-wrapper-top">
+                         <h4>Kernel predefinito</h4>
+                        <select id="advancedKernelSelect">
+                            <option value="identity">Identità</option>
+                            <option value="blur">Sfocatura</option>
+                            <option value="sharpen">Nitidezza</option>
+                            <option value="edge">Rilevamento bordi (Laplaciano)</option>
+                            <option value="custom">Personalizzato</option>
+                        </select>
+                    </div>
+                    <div class="lab-main-area">
+                        <div class="images-display-area">
+                            <div>
+                                <h4>Originale (webcam B&N)</h4>
+                                <canvas id="advancedOriginalCanvas" width="350" height="350"></canvas>
+                            </div>
+                            <div>
+                                <h4>Elaborata (webcam con kernel)</h4>
+                                <canvas id="advancedProcessedCanvas" width="350" height="350"></canvas>
+                            </div>
+                        </div>
+                        <div class="kernel-input-area">
+                             <h4>Definisci kernel personalizzato:</h4>
+                             <div class="kernel-grid" id="advancedKernelMatrix"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
             <section id="esempi">
                 <h2>Esempi di filtri convoluzionali</h2>
                 <p>I valori specifici all'interno di un kernel determinano l'effetto che il filtro avrà sull'immagine. Per illustrare questi effetti, useremo come immagine di riferimento una rappresentazione pixelata di una casetta in scala di grigi (20x19 pixel). L'immagine originale sarà mostrata a sinistra e quella elaborata dal filtro a destra.</p>
@@ -954,38 +986,6 @@
                 </article>
                  </section> 
                  
-                <section id="lab-avanzato-kernel-section"> 
-                    <div class="advanced-lab-container"> 
-                        <h3>Laboratorio avanzato: kernel su webcam</h3> 
-                        <div class="controls-wrapper-top">
-                             <h4>Kernel predefinito</h4>
-                            <select id="advancedKernelSelect">
-                                <option value="identity">Identità</option>
-                                <option value="blur">Sfocatura</option>
-                                <option value="sharpen">Nitidezza</option>
-                                <option value="edge">Rilevamento bordi (Laplaciano)</option>
-                                <option value="custom">Personalizzato</option>
-                            </select>
-                        </div>
-                        <div class="lab-main-area">
-                            <div class="images-display-area">
-                                <div>
-                                    <h4>Originale (webcam B&N)</h4>
-                                    <canvas id="advancedOriginalCanvas" width="350" height="350"></canvas>
-                                </div>
-                                <div>
-                                    <h4>Elaborata (webcam con kernel)</h4>
-                                    <canvas id="advancedProcessedCanvas" width="350" height="350"></canvas>
-                                </div>
-                            </div>
-                            <div class="kernel-input-area">
-                                 <h4>Definisci kernel personalizzato:</h4>
-                                 <div class="kernel-grid" id="advancedKernelMatrix"></div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
                 <section id="sitografia">
                     <h2>Sitografia</h2>
                     <ul>
@@ -1133,9 +1133,13 @@
                         }
                     }
                     let edgeStrength = Math.abs(sum);
-                    if (edgeStrength > 4) outputImage[y][x] = 9; 
-                    else if (edgeStrength > 2) outputImage[y][x] = 7; 
-                    else outputImage[y][x] = 2; 
+                    if (edgeStrength > 4) { 
+                        outputImage[y][x] = 0; // Bordi forti: bianco (gs0)
+                    } else if (edgeStrength > 2) { 
+                        outputImage[y][x] = 3; // Bordi medi: grigio chiaro (gs3)
+                    } else { 
+                        outputImage[y][x] = 9; // No/Bordi deboli: nero (gs9)
+                    }
                 }
             }
             return outputImage;
