@@ -754,14 +754,13 @@
                     a differenza della convoluzione matematica formale. Questa scelta semplifica l'implementazione e, nel contesto
                     delle reti neurali, permette al kernel di apprendere direttamente i pesi nella loro forma finale.
                 </p>
-                
+                <p>Il valore del pixel \((i,j)\) nell'immagine di output \(O\), indicato come \(O(i,j)\), è calcolato come segue:</p>
                 <div class="equation">
-                  $$ (I * K)(i, j) = \sum_{u}\sum_{v} I(i+u, j+v) K(u,v) $$
+                  $$ O(i,j) = \sum_{u}\sum_{v} I(i+u, j+v) K(u,v) $$
                 </div>
-
-                <p>Spieghiamo i termini di questa formula, dove l'operatore \( * \) qui denota la correlazione incrociata:</p>
+                <p>Spieghiamo i termini di questa formula:</p>
                 <ul>
-                    <li>L'espressione \( (I * K)(i, j) \) rappresenta il valore del pixel alle coordinate \( (i, j) \) nell'immagine risultante dopo l'applicazione dell'operazione.</li>
+                    <li>L'espressione \( O(i,j) \) rappresenta il valore del pixel alle coordinate \( (i,j) \) nell'immagine di output \(O\).</li>
                     <li>La lettera \( I \) indica l'immagine di input originale.</li>
                     <li>La lettera \( K \) indica il nostro kernel (o maschera).</li>
                     <li>Le lettere \( u, v \) sono gli indici che specificano la posizione all'interno del kernel, relativi al suo centro. Ad esempio, per un kernel 3x3, \( u \) e \( v \) assumono tipicamente i valori {-1, 0, 1}.</li>
@@ -782,7 +781,6 @@
                 </p>
                 <div class="image-container">
                      <img src="https://upload.wikimedia.org/wikipedia/commons/1/19/2D_Convolution_Animation.gif" alt="Animazione della convoluzione 2D: un kernel 3x3 scorre su una matrice di input per produrre una matrice di output.">
-                     
                 </div>
             </section>
 
@@ -1457,4 +1455,3 @@
     </script>
 </body>
 </html>
-
